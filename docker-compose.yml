@@ -1,0 +1,106 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks: [backend]
+
+  elasticsearch:
+    image: elasticsearch:8.18.1
+    environment:
+#      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+      discovery.type: single-node
+      xpack.security.enabled: false
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks: [backend]
+
+  zookeeper:
+    image: bitnami/zookeeper:3.9
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    ports:
+      - "2181:2181"
+    networks: [backend]
+
+  kafka:
+    image: bitnami/kafka:3.6
+    depends_on: [zookeeper]
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    volumes:
+      - kafka-data:/bitnami/kafka
+    ports:
+      - "9092:9092"
+    networks: [backend]
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    depends_on: [kafka]
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: "true"
+    ports:
+      - "8080:8080"
+    networks: [backend]
+
+  django-app:
+    build:
+      context: ./django_app
+
+    # command:
+    volumes:
+      - ./django_app:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - kafka
+      - elasticsearch
+    networks: [backend]
+
+  fastapi-app:
+    build:
+      context: ./fastapi_worker
+
+    # command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    environment:
+      - DEBUG=True
+      - API_PREFIX=/api/v1
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/postgres
+    volumes:
+      - ./fastapi_worker:/code
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgres
+      - kafka
+      - elasticsearch
+    networks: [backend]
+
+volumes:
+  postgres-data:
+  es-data:
+  kafka-data:
+
+networks:
+  backend:
+    driver: bridge
