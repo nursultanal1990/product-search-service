@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from elasticsearch import Elasticsearch
 from config.settings import ELASTICSEARCH_HOST
 
+
 class Command(BaseCommand):
     help = "Creates the 'products' index in es with proper mappings."
 

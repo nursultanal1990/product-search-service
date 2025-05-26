@@ -2,7 +2,6 @@ from loguru import logger
 from pypika import Query, Table
 from sqlalchemy import text
 
-from app.deps.session import DbSession
 from app.schemas import ProductBase
 
 
@@ -11,7 +10,7 @@ product = Table("product_product")
 
 class ProductRepository:
 
-    def __init__(self, session: DbSession):
+    def __init__(self, session):
         self.session = session
 
     async def get_product_by_id(
