@@ -5,18 +5,18 @@ class Product(models.Model):
 
     id = models.CharField(
         primary_key=True,
-        max_length=64
+        max_length=64,
     )
 
     name = models.TextField()
 
     description = models.TextField(
         blank=True,
-        null=True
+        null=True,
     )
-    
+
     created_at = models.DateTimeField(
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     def __str__(self):

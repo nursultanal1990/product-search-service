@@ -1,5 +1,9 @@
 from django.core.management.base import BaseCommand
-from confluent_kafka.admin import AdminClient, NewTopic
+
+from confluent_kafka.admin import (
+    AdminClient,
+    NewTopic,
+)
 
 from config.settings import KAFKA_BOOTSTRAP_SERVERS
 
@@ -11,7 +15,7 @@ class Command(BaseCommand):
         topic = "product-request"
 
         conf = {
-            'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS
+            "bootstrap.servers": KAFKA_BOOTSTRAP_SERVERS,
         }
 
         admin_client = AdminClient(conf)
@@ -24,6 +28,10 @@ class Command(BaseCommand):
         for t, f in fs.items():
             try:
                 f.result()
-                self.stdout.write(self.style.SUCCESS(f"✅ Topic '{t}' created successfully."))
+                self.stdout.write(
+                    self.style.SUCCESS(f"✅ Topic '{t}' created successfully."),
+                )
             except Exception as e:
-                self.stdout.write(self.style.WARNING(f"⚠️ Topic '{t}' could not be created: {e}"))
+                self.stdout.write(
+                    self.style.WARNING(f"⚠️ Topic '{t}' could not be created: {e}"),
+                )

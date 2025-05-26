@@ -2,8 +2,8 @@ from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
-from rest_framework.views import APIView
 from rest_framework.status import HTTP_200_OK
+from rest_framework.views import APIView
 
 from product.services.product_cache import get_or_request_product
 
@@ -27,7 +27,7 @@ class ProductDetailView(APIView):
         return JsonResponse(
             {
                 "status": "processing",
-                "message": "Product not found in cache. Requested from backend."
+                "message": "Product not found in cache. Requested from backend.",
             },
-            status=202
+            status=202,
         )

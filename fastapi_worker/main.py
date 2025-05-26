@@ -1,10 +1,8 @@
-from loguru import logger
-
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from app.config import settings
 from app.kafka_worker import broker
+from fastapi import FastAPI
+from loguru import logger
 
 
 @asynccontextmanager

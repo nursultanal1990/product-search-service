@@ -1,8 +1,10 @@
-from loguru import logger
-from pypika import Query, Table
-from sqlalchemy import text
-
 from app.schemas import ProductBase
+from loguru import logger
+from pypika import (
+    Query,
+    Table,
+)
+from sqlalchemy import text
 
 
 product = Table("product_product")

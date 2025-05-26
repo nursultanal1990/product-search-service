@@ -1,13 +1,14 @@
+import json
+
 from elasticsearch import NotFoundError
+from loguru import logger
 from product.services.es_client import es_client
 from product.services.kafka_producer import produce
-from loguru import logger
-import json
 
 
 def get_product_from_cache(
     product_id: str,
-    index: str = "products"
+    index: str = "products",
 ) -> dict | None:
     try:
         result = es_client.get(index=index, id=product_id)
@@ -22,7 +23,7 @@ def get_product_from_cache(
 def get_or_request_product(
     product_id: str,
     index: str = "products",
-    topic: str = "product-request"
+    topic: str = "product-request",
 ) -> dict | None:
     product = get_product_from_cache(product_id, index=index)
 
@@ -31,7 +32,7 @@ def get_or_request_product(
 
     event = {
         "event": "product_cache_miss",
-        "product_id": product_id
+        "product_id": product_id,
     }
 
     produce(topic, value=json.dumps(event), key=product_id)

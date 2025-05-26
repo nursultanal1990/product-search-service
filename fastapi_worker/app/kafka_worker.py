@@ -1,11 +1,12 @@
 import json
-from loguru import logger
-
-from faststream.kafka import KafkaBroker, KafkaMessage
 
 from app.config import settings
-from app.db import sqlalchemy_factory as sqla
 from app.service import update_product_cache
+from faststream.kafka import (
+    KafkaBroker,
+    KafkaMessage,
+)
+from loguru import logger
 
 
 broker = KafkaBroker(settings.kafka_bootstrap_servers)

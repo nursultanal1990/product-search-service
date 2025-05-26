@@ -1,13 +1,12 @@
 from collections.abc import AsyncGenerator
 
+from app.config import settings
 from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     AsyncEngine,
     AsyncSession,
     create_async_engine,
 )
-
-from app.config import settings
 
 
 class SQLAlchemyFactory:

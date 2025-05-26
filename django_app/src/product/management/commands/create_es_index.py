@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand
+
 from elasticsearch import Elasticsearch
+
 from config.settings import ELASTICSEARCH_HOST
 
 
@@ -19,20 +21,24 @@ class Command(BaseCommand):
                     "fields": {
                         "keyword": {
                             "type": "keyword",
-                            "ignore_above": 256
-                        }
-                    }
+                            "ignore_above": 256,
+                        },
+                    },
                 },
                 "description": {"type": "text"},
                 "created_at": {
                     "type": "date",
-                    "format": "strict_date_optional_time||epoch_millis"
-                }
-            }
+                    "format": "strict_date_optional_time||epoch_millis",
+                },
+            },
         }
 
         if not es.indices.exists(index=index_name):
             es.indices.create(index=index_name, mappings=mappings)
-            self.stdout.write(self.style.SUCCESS(f"Index '{index_name}' created successfully."))
+            self.stdout.write(
+                self.style.SUCCESS(f"Index '{index_name}' created successfully."),
+            )
         else:
-            self.stdout.write(self.style.WARNING(f"Index '{index_name}' already exists."))
+            self.stdout.write(
+                self.style.WARNING(f"Index '{index_name}' already exists."),
+            )

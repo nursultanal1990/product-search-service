@@ -1,9 +1,8 @@
-from loguru import logger
-from elasticsearch import AsyncElasticsearch
-
 from app.config import settings
-from app.repo import ProductRepository
 from app.db import sqlalchemy_factory as sqla
+from app.repo import ProductRepository
+from elasticsearch import AsyncElasticsearch
+from loguru import logger
 
 
 es = AsyncElasticsearch(settings.elasticsearch_host)
@@ -26,7 +25,9 @@ async def update_product_cache(
                 "id": product.id,
                 "name": product.name,
                 "description": product.description,
-                "created_at": product.created_at.isoformat() if product.created_at else None
+                "created_at": (
+                    product.created_at.isoformat() if product.created_at else None
+                ),
             }
 
             logger.info(f"es doc: {doc}")
