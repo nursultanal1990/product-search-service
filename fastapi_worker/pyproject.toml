@@ -18,6 +18,8 @@ sqlalchemy = "^2.0.36"
 orjson = "^3.10.12"
 pypika = "^0.48.9"
 httpx = "^0.28.1"
+faststream = {extras = ["kafka"], version = "^0.5.42"}
+elasticsearch = {extras = ["async"], version = "^8.12.1"}
 
 
 [tool.poetry.group.lint.dependencies]

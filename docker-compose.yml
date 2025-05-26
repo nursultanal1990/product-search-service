@@ -42,7 +42,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CFG_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       ALLOW_PLAINTEXT_LISTENER: "yes"
     volumes:
@@ -65,16 +65,24 @@ services:
   django-app:
     build:
       context: ./django_app
+      dockerfile: Dockerfile
 
-    # command:
+    # command: python ./manage.py runserver 0.0.0.0:8000
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/postgres"
+      ELASTICSEARCH_HOST: "http://elasticsearch:9200"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      KAFKA_CLIENT_ID: django-app
+
     volumes:
       - ./django_app:/code
-    ports:
-      - "8000:8000"
+
     depends_on:
       - postgres
       - kafka
       - elasticsearch
+    ports:
+      - "8000:8000"
     networks: [backend]
 
   fastapi-app:
@@ -83,9 +91,10 @@ services:
 
     # command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
     environment:
-      - DEBUG=True
-      - API_PREFIX=/api/v1
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/postgres
+      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/postgres"
+      ELASTICSEARCH_HOST: "http://elasticsearch:9200"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      APP_NAME: product-cache-loader-fastapi
     volumes:
       - ./fastapi_worker:/code
     ports:

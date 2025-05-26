@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY app /code/
 
-CMD ["sh", "-c", "uvicorn --factory main:create_app --host 0.0.0.0 --port 8008 --workers 4"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8008 --workers 1"]

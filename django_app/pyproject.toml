@@ -17,7 +17,7 @@ split-settings = "^1.0.0"
 django-extensions = "^4.1"
 ipython = "^9.2.0"
 loguru = "^0.7.3"
-elasticsearch = "^9.0.1"
+elasticsearch = "^8.12.1"
 confluent-kafka = "^2.10.0"
 
 

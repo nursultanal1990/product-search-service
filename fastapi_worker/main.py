@@ -1,23 +1,31 @@
-from contextlib import asynccontextmanager
+from loguru import logger
 
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
 from app.config import settings
-from app.db import sqlalchemy_factory
+from app.kafka_worker import broker
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await broker.start()
+    logger.info("Kafka broker started")
+
     yield
-    await sqlalchemy_factory.dispose()
+
+    await broker.close()
+    logger.info("Kafka broker stopped")
 
 
-def create_app() -> FastAPI:
-    app = FastAPI(
-        title="FastAPI Worker",
-        docs_url="/api/docs",
-        debug=eval(settings.debug),
-        lifespan=lifespan,
-    )
+app = FastAPI(
+    title="FastAPI Worker",
+    docs_url="/api/docs",
+    debug=True,
+    lifespan=lifespan,
+)
 
-    return app
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
